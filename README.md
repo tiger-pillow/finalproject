@@ -22,6 +22,7 @@ OK, here we go.
 
 # Potential of Litter Size as a Predictor of Menstruation in Rodentia 
 
+### Gladys Fang (since my github name is unrelated) 
 ## Introduction and Goals
 
   Menstruation is the periodic shedding of endometrium decidua in the absence of pregnancy. The endometrium goes through a complex process of decidualization triggered by sequential hormone fluctuations to prepare for pregnancy. However, in most mammals, decidualization is triggered by embryonic signals, and the decidua is reabsorbed in the case of pseudopregnancy. Among the 5000+ eutherian mammals, only a small number of species have been shown to have menstruation. These include most primates, three species of bats, the spiny mouse and the elephant shrew (Catalini and Fedder 2020). 
