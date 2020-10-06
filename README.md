@@ -32,10 +32,11 @@ OK, here we go.
   
   Here I hypothesize that small litter size might be predictive of spontaneous decidualization and menstruation. In order to test the hypothesis, I will conduct a thorough literature search, use existing databases and compile a dataset of rodent litter size. The aim is to map litter size over the phylogeny of rodents, observe litter size patterns, and find rodent species of small litter size (less than two), as it might give us hints to undiscovered menstruating rodent species.
   
-Method:
+Tentative Method:
   1. I will collect average litter size data from PanTheria life history database (Jones, Bielby et al. 2009) and extensive literature searches. The expected dataset will comprise about 1000 species out of 2200 in Rodentia. I will exclude the speicies with incomplete data and make a character state matrix. 
-  2. I will download a Rodentia tree from VertLife.org 
-
+  2. Since Jetz lab provides a very credible and relatively complete Mammal tree, I will start by download a Rodentia tree from VertLife.org (Upham, Esselstyn et al. 2019). Ideally this tree comprises of all the species that I have data for from step 1, but if not I will adjust local topology /add/ minus certain species by inferring the tree myself. This will require inferring certain clade using DNA data from NCBI taxonomy database, align the DNA sequences for genes and using iqtree to construct the clade. Then I will compare this clade with the tree from VertLife.org and make adjustments. 
+  3. Map character state for each species onto the tree, and infer ancestral state / sister states. (I don't know the specifics of comparative methods yet, but I will learn about ancestral state reconstruction in Week 10 and comparative methods in Week 11. Before that, I will focus on collecting the data and acquiring a satisfying tree) 
+  4. Visual presentation, make adjustment to the tree presentation, highlight species/clades of interests, write up discussion and conclusions. 
 
 ## Methods
 
@@ -54,4 +55,18 @@ The biggest difficulty in implementing these analyses was...
 If I did these analyses again, I would...
 
 ## References
+
+Bellofiore, N., et al. (2017). "First evidence of a menstruating rodent: the spiny mouse (Acomys cahirinus)." American Journal of Obstetrics and Gynecology 216(1): 40. e41-40. e11.
+	
+Catalini, L. and J. Fedder (2020). "Characteristics of the endometrium in menstruating species: lessons learned from the animal kingdom." Biology of Reproduction 102(6): 1160-1169.
+	
+Jones, K. E., et al. (2009). "PanTHERIA: a species‐level database of life history, ecology, and geography of extant and recently extinct mammals: Ecological Archives E090‐184." Ecology 90(9): 2648-2648.
+	
+Macklon, N. S. and J. J. Brosens (2014). "The human endometrium as a sensor of embryo quality." Biology of Reproduction 91(4): 98, 91-98.
+
+Upham, N. S., J. A. Esselstyn, and W. Jetz. (2019). Inferring the mammal tree: species-level sets of phylogenies for questions in ecology, evolution, and conservation. PLOS Biology. https://doi.org/10.1371/journal.pbio.3000494
+
+Wagner, G (2020). “The Evolutionary History of Menstruation.” American Journal of Obstetrics and Gynecology (in press).
+
+
 
