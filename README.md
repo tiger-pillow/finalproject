@@ -35,6 +35,8 @@ OK, here we go.
   
 Tentative Method:
   1. I will collect average litter size data from PanTheria life history database (Jones, Bielby et al. 2009) and extensive literature searches. The expected dataset will comprise about 1000 species out of 2200 in Rodentia. I will exclude the speicies with incomplete data and make a character state matrix. 
+     It is quite probably that I won't finish collecting all the data till the date this project is due -- in that case I will cover at least 5-6 families within Rodentia and do phylogenetic analysis for those. 
+     
   2. Since Jetz lab provides a very credible and relatively complete Mammal tree, I will start by download a Rodentia tree from VertLife.org (Upham, Esselstyn et al. 2019). Ideally this tree comprises of all the species that I have data for from step 1, but if not I will adjust local topology /add/ minus certain species by inferring the tree myself. This will require inferring certain clade using DNA data from NCBI taxonomy database, align the DNA sequences for genes and using iqtree to construct the clade. Then I will compare this clade with the tree from VertLife.org and make adjustments. 
   3. Map character state for each species onto the tree, and infer ancestral state / sister states. (I don't know the specifics of comparative methods yet, but I will learn about ancestral state reconstruction in Week 10 and comparative methods in Week 11. Before that, I will focus on collecting the data and acquiring a satisfying tree) 
   4. Visual presentation, make adjustment to the tree presentation, highlight species/clades of interests, write up discussion and conclusions. 
