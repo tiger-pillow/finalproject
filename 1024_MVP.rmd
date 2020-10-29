@@ -16,7 +16,7 @@ library(phytools)
 
 ```{r fig.width=10, fig.height=8  } 
   
-  tree_readin = read.nexus('output_1024.nex')
+  tree_readin = read.nexus('1024_output.nex')
   
   consensusTree = consensus(tree_readin, p = 0.5, check.labels = FALSE)
   plot(consensusTree)
@@ -32,7 +32,7 @@ library(phytools)
 
 ```{r fig.height=8} 
 
-charstate = read.csv('MVPclean_1024.csv', row.names = 1)
+charstate = read.csv('1024_MVP.csv', row.names = 1)
 charstate = as.matrix(charstate)[,1]
 charstate
 
