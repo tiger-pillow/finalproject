@@ -21,51 +21,59 @@ Goals:
 
 ## Plot the consensus tree
 
-I realize that 1000 trees are not sufficient to resolve the phylogeny, as shown below. Therefore I did ancestral state reconstruction on a randomly chosen tree. For the final version, I plan to run on 10,000 trees. I will settle with a random tree for now because 10,000 trees 
-takes significantly longer time to process.
+I realize that 1000 trees are not sufficient to resolve the phylogeny, as shown below. Therefore I did ancestral state reconstruction on a randomly chosen tree. For the final version, I plan to run on 10,000 trees. I will settle with a random tree for now because 10,000 trees takes significantly longer time to process.
 
+I will also look into recent rodent literature to see if others have resolved a better tree and if there is anything that I can learn from. 
 
 ```{r fig.width=15, fig.height=60 } 
   tree_readin = read.nexus('1028_output.nex')
   tree2 = random.tree<-sample(tree_readin,size=1)[[1]]
   
-  #print(tree2)
-  #plot(tree2)
-  
- # consensusTree = consensus(tree_readin, p = 0.5, check.labels = FALSE)
- # plot(consensusTree)
-  
-  kable(charstate)
+  print(tree2)
+  plot(tree2)
+
+ consensusTree = consensus(tree_readin, p = 0.5, check.labels = FALSE)
+ plot(consensusTree)
+
+ # kable(charstate)
 ```
 
 ## Ancestral State Reconstruction
+I was able to do a basic reconstruction using phytools.I can see the projected litter size for ancestral nodes. 
+Next steps:
+
+1. Do the analysis on a consensus tree instead of a random tree
+
+2. Clearly know projected nuemerical value for ancestral nodes 
+å
+3. Figure out a better plotting scheme, the rainbow colorscale is not visually informative. 
 
 ````{r fig.width=15, fig.height=60 } 
 # Character state matrix 
 charstate = read.csv('1028_MVP2.csv', row.names = 1)
 charstate = as.matrix(charstate)[,1]
 
-#plotTree(tree2, type = 'fan', ftype = 'i', fsize = 1)
-#result = ace(charstate, tree2, type = 'continuous', method = 'ML')
+plotTree(tree2, type = 'fan', ftype = 'i', fsize = 1)
+result = ace(charstate, tree2, type = 'continuous', method = 'ML')
 class(charstate)
 
 ```
 
 ````{r fig.width=15, fig.height= 80 } 
 
-#contresult = contMap(tree2, charstate, plot = FALSE)
-#plot(contresult, lwd = 5, legend = 0.7 * max(nodeHeights(tree2)),outline = 0) # fsize = c(0.5, 0.5)
+contresult = contMap(tree2, charstate, plot = FALSE)
+plot(contresult, lwd = 5, legend = 0.7 * max(nodeHeights(tree2)),outline = 0) # fsize = c(0.5, 0.5)
 
-D = data.frame(
-    species = c(charstate
-)
-
-mass_plot = ggtree( tree2 ) %<+% D + 
-  geom_tiplab( fontface = "italic", offset=20 ) +
-  xlim(0, 300) +
-  geom_tippoint( aes(color= x), size=3, alpha=1 )
-
-mass_plot
+# D = data.frame(
+#     species = c(charstate
+# )
+# 
+# mass_plot = ggtree( tree2 ) %<+% D + 
+#   geom_tiplab( fontface = "italic", offset=20 ) +
+#   xlim(0, 300) +
+#   geom_tippoint( aes(color= x), size=3, alpha=1 )
+# 
+# mass_plot
 
 
 ```
