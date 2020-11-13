@@ -1,5 +1,5 @@
 ---
-title: "Litter Size Evolution pre-run"
+title: "Litter Size Evolution"
 output: html_document
 ---
 
@@ -13,26 +13,19 @@ library(phytools)
 library(tidyverse)
 library(magrittr)
 ```
-## Plot the consensus tree
+## With consensus tree
 
-```{r fig.width=15, fig.height = 200} 
+```{r fig.width=15, fig.height = 200, include = FALSE} 
   tree_global = read.tree('RAxML_bipartitions.result_FIN4_raw_rooted_wBoots_4098mam1out_OK.newick')
   n_tips = length(tree_global$tip.label)
   root_node = tree_global$edge[(!tree_global$edge[,1] %in% tree_global$edge[,2]),1] %>% unique()
   root_age = max( dist.nodes(tree_global)[,root_node] )
   
-  label_offset = 0.05 * root_age
-  tree_width = 1.5 * root_age
-  
-  # ggtree_global = ggtree(tree_global, lwd = 0.1) +
-  #   geom_tiplab( fontface = "italic", offset = label_offset, size = 2) +
-  #   xlim(0, tree_width)
-  # 
-  # ggtree_global
-
+  label_offset = 0.02 * root_age
+  tree_width = 5 * root_age
 ```
 
-```{r fig.height = 200}
+```{r, fig.height = 200, include = FALSE}
 ## drop all the non-relevant tips
 
 charstate = read.csv('1111_FP_upTo1200.csv') %>%
@@ -41,8 +34,6 @@ charstate = read.csv('1111_FP_upTo1200.csv') %>%
 tips <- tree_global$tip.label
 tips_short = str_replace(tips, "[A-Z_]+$", "")
 tree_global$tip.label = tips_short
-
-charstate
 
 tip_names = data.frame(Name_long=tips, Name=tips_short)
 charstate %<>% left_join(tip_names)
@@ -63,6 +54,51 @@ charstate = charstate[match( tree_global$tip.label, charstate[,1] ), ]
       stop("Error: tip labels and dataframe rows not in same order!")
     }
 
+```
 
+```{r,  fig.height = 300, fig.width = 40, echo = FALSE}
+
+
+litter_ancestral = 
+  ace(
+  charstate$Average, 
+  tree_global,
+  type = "continuous",
+  method = "pic",
+  model = "BM"
+)
+
+# geo_ggtree = ggtree( geoTree ) + 
+#   geom_tiplab( fontface = "italic", offset=label_offset ) +
+#   xlim(0, tree_width) +
+#   geom_text2(aes(label=node), col="red", nudge_x=label_offset/2 ) +
+#   geom_tippoint( aes(color=node_values), size=3, alpha=1 )
+# geo_ggtree
+
+# interval_width = wing_ancestral$CI95[,2] - wing_ancestral$CI95[,1]
+# node_values = c( rep(NA, nrow(geoData)), interval_width )
+# kable( data.frame( node = seq(1, length(node_values)), width=node_values ) )
+# geo_ggtree + 
+#   geom_nodepoint(  aes(color=node_values), size=3, alpha=1 )
+
+node_values = c(charstate$Average, round(litter_ancestral$ace, digits= 2))
+
+globaltree = ggtree(tree_global ) + 
+  geom_tiplab( fontface = "italic", size= 10, offset = label_offset) + 
+  xlim(0, 1.2) + 
+  geom_text2(aes(label = node_values), nudge_x = 0.02, size = 10) +
+  geom_tippoint(aes(color=node_values), size= 8, alpha=1 ) + 
+  scale_color_gradient(low = "red", high = "green") +
+  theme(legend.text=element_text(size= 40),
+        legend.title=element_text(size=60),
+        legend.key.size= unit(3,"cm"), 
+        legend.position= "top")
+
+globaltree
 
 ```
+
+
+
+
+
