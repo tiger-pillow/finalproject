@@ -40,8 +40,4 @@ drop_list <- tree_global$tip.label
 drop_list
 
 
-
-
-
-
 ```

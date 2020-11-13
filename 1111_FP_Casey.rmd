@@ -1,0 +1,68 @@
+---
+title: "Litter Size Evolution pre-run"
+output: html_document
+---
+
+```{r setup, echo = FALSE, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(ape)
+library(ggtree)
+library(knitr)
+library(phytools)
+library(tidyverse)
+library(magrittr)
+```
+## Plot the consensus tree
+
+```{r fig.width=15, fig.height = 200} 
+  tree_global = read.tree('RAxML_bipartitions.result_FIN4_raw_rooted_wBoots_4098mam1out_OK.newick')
+  n_tips = length(tree_global$tip.label)
+  root_node = tree_global$edge[(!tree_global$edge[,1] %in% tree_global$edge[,2]),1] %>% unique()
+  root_age = max( dist.nodes(tree_global)[,root_node] )
+  
+  label_offset = 0.05 * root_age
+  tree_width = 1.5 * root_age
+  
+  # ggtree_global = ggtree(tree_global, lwd = 0.1) +
+  #   geom_tiplab( fontface = "italic", offset = label_offset, size = 2) +
+  #   xlim(0, tree_width)
+  # 
+  # ggtree_global
+
+```
+
+```{r fig.height = 200}
+## drop all the non-relevant tips
+
+charstate = read.csv('1111_FP_upTo1200.csv') %>%
+  mutate(Average = as.numeric(Average))
+
+tips <- tree_global$tip.label
+tips_short = str_replace(tips, "[A-Z_]+$", "")
+tree_global$tip.label = tips_short
+
+charstate
+
+tip_names = data.frame(Name_long=tips, Name=tips_short)
+charstate %<>% left_join(tip_names)
+
+missing_in_charstate = tree_global$tip.label[! tree_global$tip.label %in% charstate$Name]
+ 
+tree_global = ape::drop.tip(tree_global, missing_in_charstate)
+
+charstate %<>% filter(!is.na(Name_long))
+
+# geoData = geoData[ match( row.names(geoData), geoTree$tip.label  ), ]
+rank <- match( charstate[,1], tree_global$tip.label )
+tipscleaned <- tree_global$tip.label
+
+charstate = charstate[match( tree_global$tip.label, charstate[,1] ), ]
+
+ if(! all( charstate[,1] ==tree_global$tip.label ) ){
+      stop("Error: tip labels and dataframe rows not in same order!")
+    }
+
+
+
+```

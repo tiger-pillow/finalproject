@@ -1,0 +1,58 @@
+---
+title: "litter Size Evolution"
+output: html_document
+---
+
+```{r setup, echo = FALSE, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(ape)
+library(ggtree)
+library(knitr)
+library(phytools)
+```
+
+## Plot the consensus tree
+
+```{r fig.width=10, fig.height=8  } 
+  
+  tree_readin = read.nexus('1024_output.nex')
+  
+  consensusTree = consensus(tree_readin, p = 0.5, check.labels = FALSE)
+  plot(consensusTree)
+  
+  tree2text ='((((((Kerodon_rupestris:2.65964806,Kerodon_acrobata:2.65964806):7.070655198,(Hydrochoerus_isthmius:0.9624628885,Hydrochoerus_hydrochaeris:0.9624628885):8.767839833):3.2167183,(Dolichotis_salinicola:8.269430019,Dolichotis_patagonum:8.269430019):4.677589928):4.165517547,((Galea_spixii:6.674462226,(Galea_musteloides:1.345614929,Galea_flavidens:1.3456149831000002):5.328847028):8.305844735,((Microcavia_niata:3.398037325,(Microcavia_australis:2.535517406,Microcavia_shiptoni:2.535517406):0.8625201877):8.568604799,(((((Cavia_intermedia:0.1628145168,Cavia_porcellus:0.1628145168):1.565624154,Cavia_tschudii:1.728438563):0.7877033995,Cavia_aperea:2.5161419629):0.6025356013,Cavia_fulgida:3.118677027):0.7364220485,Cavia_magna:3.855099612):8.111542512):3.013667522):2.132229996):21.43150812,((Lagostomus_maximus:15.19210898,Lagostomus_crassus:15.19210898):2.855989465,((Chinchilla_lanigera:1.395390122,Chinchilla_chinchilla:1.395390122):7.098549606,((Lagidium_wolffsohni:2.326574646,Lagidium_viscacia:2.326574646):0.1289180577,Lagidium_peruanum:2.455492569):6.03844689):9.554157105):20.495953081999996):32.9339615665,(Castor_fiber:4.629479899,Castor_canadensis:4.629479899):66.8485303);'
+  
+  tree2 = read.tree(text = tree2text)
+  plot(tree2)
+
+```
+
+## Ancestral State Reconstruction
+
+```{r fig.height=8} 
+
+charstate = read.csv('1024_MVP.csv', row.names = 1)
+charstate = as.matrix(charstate)[,1]
+charstate
+
+tree2_reduced = drop.tip(tree2, c("Lagidium_wolffsohni", "Cavia_magna", "Galea_flavidens", "Kerodon_acrobata", "Lagostomus_crassus") )
+plot(tree2_reduced)
+
+length(tree2_reduced$tip.label)
+length(tree2_reduced)
+length(charstate)
+
+plotTree(tree2_reduced, type = 'fan', ftype = 'i', fsize = 2.5)
+
+result = ace(charstate, tree2_reduced, type = 'continuous', method = 'ML')
+
+phenogram(tree2_reduced,charstate, spread.labels = TRUE, fsize = 2.5, spread.costs=c(1,0))
+```
+
+```{r fig.height=8} 
+
+contresult = contMap(tree2_reduced, charstate, plot = FALSE)
+plot(contresult, lwd = 20, legend = 0.7 * max(nodeHeights(tree2_reduced)), fsize = c(2, 2))
+
+```

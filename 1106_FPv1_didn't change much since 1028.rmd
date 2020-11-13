@@ -20,8 +20,8 @@ library(phytools)
   print(tree2)
   plot(tree2)
 
- consensusTree = consensus(tree_readin, p = 0.5, check.labels = FALSE)
- plot(consensusTree)
+  consensusTree = consensus(tree_readin, p = 0.5, check.labels = FALSE)
+  plot(consensusTree)
 
  # kable(charstate)
 ```
@@ -33,7 +33,7 @@ Next steps:
 1. Do the analysis on a consensus tree instead of a random tree
 
 2. Clearly know projected nuemerical value for ancestral nodes 
-å
+
 3. Figure out a better plotting scheme, the rainbow colorscale is not visually informative. 
 
 ````{r fig.width=15, fig.height=60 } 
