@@ -1,0 +1,115 @@
+---
+title: "Litter Size Evolution"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+Consensus tree extracted from an Upham et al. paper (Jetz lab)  
+Data: Out of 531 data points, 458 are in the consensus tree (thus plotted), out of 1200 species searched (2200 in total)  
+
+Acomys cahirinus (menstruating cairo spiny mouse) is included, it might take a few seconds to find.
+
+For the rest 73 data points (531-458), I don't know where they lie on the tree  
+next steps:  
+1. find out where the 73 data points lie, and modify the consensus tree to include them   
+2. keep searching species   
+3. get more familiar with rodentia phylgoeny  
+
+
+```{r setup, echo = FALSE, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(ape)
+library(ggtree)
+library(knitr)
+library(phytools)
+library(tidyverse)
+library(magrittr)
+```
+
+```{r fig.width=15, fig.height = 200, include = FALSE} 
+  tree_global = read.tree('RAxML_bipartitions.result_FIN4_raw_rooted_wBoots_4098mam1out_OK.newick')
+  n_tips = length(tree_global$tip.label)
+  root_node = tree_global$edge[(!tree_global$edge[,1] %in% tree_global$edge[,2]),1] %>% unique()
+  root_age = max( dist.nodes(tree_global)[,root_node] )
+  
+  label_offset = 0.02 * root_age
+  tree_width = 5 * root_age
+```
+
+```{r, include = FALSE}
+## drop all the non-relevant tips
+
+charstate = read.csv('1111_FP_upTo1200.csv') %>%
+  mutate(Average = as.numeric(Average))
+
+tips <- tree_global$tip.label
+tips_short = str_replace(tips, "[A-Z_]+$", "")
+tree_global$tip.label = tips_short
+
+tip_names = data.frame(Name_long=tips, Name=tips_short)
+charstate %<>% left_join(tip_names)
+
+missing_in_charstate = tree_global$tip.label[! tree_global$tip.label %in% charstate$Name]
+ 
+tree_global = ape::drop.tip(tree_global, missing_in_charstate)
+
+charstate %<>% filter(!is.na(Name_long))
+
+rank <- match( charstate[,1], tree_global$tip.label )
+
+charstate = charstate[match( tree_global$tip.label, charstate[,1] ), ]
+
+ if(! all( charstate[,1] ==tree_global$tip.label ) ){
+      stop("Error: tip labels and dataframe rows not in same order!")
+    }
+
+```
+
+```{r,  fig.height = 200, fig.width = 40, echo = FALSE}
+
+
+litter_ancestral = 
+  ace(
+  charstate$Average, 
+  tree_global,
+  type = "continuous",
+  method = "pic",
+  model = "BM"
+)
+
+# geo_ggtree = ggtree( geoTree ) + 
+#   geom_tiplab( fontface = "italic", offset=label_offset ) +
+#   xlim(0, tree_width) +
+#   geom_text2(aes(label=node), col="red", nudge_x=label_offset/2 ) +
+#   geom_tippoint( aes(color=node_values), size=3, alpha=1 )
+# geo_ggtree
+
+# interval_width = wing_ancestral$CI95[,2] - wing_ancestral$CI95[,1]
+# node_values = c( rep(NA, nrow(geoData)), interval_width )
+# kable( data.frame( node = seq(1, length(node_values)), width=node_values ) )
+# geo_ggtree + 
+#   geom_nodepoint(  aes(color=node_values), size=3, alpha=1 )
+
+node_values = c(charstate$Average, round(litter_ancestral$ace, digits= 2))
+
+globaltree = ggtree(tree_global ) + 
+  geom_tiplab( fontface = "italic", size= 10, offset = label_offset) + 
+  xlim(0, 1.2) + 
+  geom_text2(aes(label = node_values), nudge_x = 0.02, size = 8) +
+  geom_tippoint(aes(color=node_values), size= 8, alpha=1 ) + 
+  scale_color_gradient(low = "red", high = "green") +
+  theme(legend.text=element_text(size= 40),
+        legend.title=element_text(size=60),
+        legend.key.size= unit(3,"cm"), 
+        legend.position= "top")
+
+globaltree
+
+```
+
+
+
+
+

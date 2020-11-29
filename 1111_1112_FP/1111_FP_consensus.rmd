@@ -1,0 +1,43 @@
+---
+title: "Litter Size Evolution pre-run"
+output: html_document
+---
+
+```{r setup, echo = FALSE, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(ape)
+library(ggtree)
+library(knitr)
+library(phytools)
+```
+## Plot the consensus tree
+
+```{r fig.width=15, fig.height = 200} 
+  tree_global = read.tree('RAxML_bipartitions.result_FIN4_raw_rooted_wBoots_4098mam1out_OK.newick')
+  n_tips = length(tree_global$tip.label)
+  root_node = tree_global$edge[(!tree_global$edge[,1] %in% tree_global$edge[,2]),1] %>% unique()
+  root_age = max( dist.nodes(tree_global)[,root_node] )
+  
+  label_offset = 0.05 * root_age
+  tree_width = 1.5 * root_age
+  
+  ggtree_global = ggtree(tree_global, lwd = 0.1) +
+    geom_tiplab( fontface = "italic", offset = label_offset, size = 2) +
+    xlim(0, tree_width)
+
+  ggtree_global
+
+```
+
+```{r}
+## drop all the non-relevant tips
+
+charstate = read.csv('1111_FP_upTo1200.csv', row.names = 1)
+node_list = charstate[,0]
+node_list
+drop_list <- tree_global$tip.label
+drop_list
+
+
+```
