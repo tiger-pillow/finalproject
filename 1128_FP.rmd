@@ -1,9 +1,6 @@
 ---
 title: "Litter Size Evolution"
-output:
-  pdf_document: default
-  html_document: default
-  word_document: default
+output: github_document
 ---
 
 Consensus tree extracted from an Upham et al. paper (Jetz lab)  
@@ -34,7 +31,7 @@ library(magrittr)
 ```{r, include = FALSE}
 ## drop all the non-relevant tips
 
-charstate = read.csv('1128_subset.csv') 
+charstate = read.csv('1128_Completedata.csv') 
 charstate
 charstate = charstate%>%mutate(Average = as.numeric(Average))
 
@@ -61,8 +58,7 @@ charstate = charstate[match( tree_global$tip.label, charstate[,1] ), ] #the data
 
 ```
 
-```{r,  fig.height = 200, fig.width = 40, echo = FALSE}
-
+```{r,  fig.height = 250, fig.width = 50, echo = FALSE}
 
 litter_ancestral = 
   ace(
@@ -73,48 +69,106 @@ litter_ancestral =
   model = "BM"
 )
 
-node_values = c(charstate$Average, round(litter_ancestral$ace, digits= 2))
-node_values
+node_values = c(charstate$Average, round(litter_ancestral$ace, digits= 2)) # datastructure for plotting the tips
+
+#for clade
+
+MRCA_dipodidae = getMRCA(tree_global, c("Zapus_princeps", "Sicista_tianshanica"))
+MRCA_muridae = getMRCA(tree_global, c("Spalax_microphthalmus","Melanomys_caliginosus"))
+MRCA_anomaluridae = getMRCA(tree_global, c("Anomalurus_beecrofti", "Idiurus_macrotis"))
+MRCA_pedetidae = getMRCA(tree_global, c("Pedetes_capensis", "Pedetes_surdaster"))
+
+MRCA_geomyidae = getMRCA(tree_global, c("Geomys_texensis", "Thomomys_talpoides"))
+MRCA_heteromyidae = getMRCA(tree_global, c("Heteromys_oresterus", "Dipodomys_phillipsii"))
+MRCA_hystricognathi = getMRCA(tree_global, c("Thryonomys_swinderianus", "Cavia_tschudii"))
+MRCA_castoridae = getMRCA(tree_global, c("Castor_canadensis", "Castor_fiber"))
+
+MRCA_ctenodactylidae = getMRCA(tree_global, c("Ctenodactylus_gundi", "Massoutiera_mzabi"))
+MRCA_sciuridae = getMRCA(tree_global, c("Tamiasciurus_mearnsi", "Ratufa_bicolor"))
+MRCA_aplodontidae = getMRCA(tree_global, c("Aplodontia_rufa", "Aplodontia_rufa"))
+MRCA_gliridae = getMRCA(tree_global, c("Glirulus_japonicus", "Dryomys_nitedula"))
+
+#for highlight
+MRCA_acomys = getMRCA(tree_global, c("Acomys_cahirinus", "Acomys_spinosissimus"))
+MRCA_mus = getMRCA(tree_global, c("Mus_pahari", "Mus_tenellus"))
+MRCA_rattus = getMRCA(tree_global, c("Rattus_exulans", "Rattus_praetor"))
 
 globaltree = ggtree(tree_global, layout = 'circular' ) + 
-  geom_tiplab( fontface = "italic", size= 5, offset = label_offset) + 
+  geom_tiplab( fontface = "italic", size= 1.5, offset = 0.01) + 
   xlim(0, 1.2) + 
-  geom_text2(aes(label = node_values), nudge_x = 0.02, size = 4) +
-  geom_tippoint(aes(color=node_values), size= 4, alpha=1 ) + 
-  geom_nodepoint( aes(color=node_values), size= 4, alpha=1 ) + # problem here! I have trouble adding internal node points. 
-  scale_color_gradient(low = "red", high = "green") +
+  geom_text2(aes(label = node_values), nudge_x = 0.01, size = 1.5) +
+  geom_tippoint(aes(color=node_values), size= 1.5, alpha= 0.8 ) + 
+  geom_nodepoint( aes(color=node_values), size= 1.5, alpha= 0.8 ) + 
+  scale_color_gradientn(colours = rainbow(3)) +
   theme(legend.text=element_text(size= 40),
         legend.title=element_text(size=60),
         legend.key.size= unit(3,"cm"), 
-        legend.position= "top")
+        legend.position= "top") + 
+  geom_cladelabel(node=MRCA_muridae, label="Muridae", offset = 0.05, fontsize = 8, color = "blue", barsize = 1.5) + 
+  geom_cladelabel(node=MRCA_dipodidae, label="Dipodidae", offset = 0.1, fontsize = 8, color = "blue",barsize = 1.5) + 
+  geom_cladelabel(node=MRCA_anomaluridae, label="Anomaluridae", offset = 0.1, fontsize = 8, color = "blue", barsize = 1.5 ) +
+  geom_cladelabel(node=MRCA_pedetidae, label="Pedetidae", offset = 0.12, fontsize = 8, color = "blue", barsize = 1.5 ) +
+  
+  geom_cladelabel(node=MRCA_heteromyidae, label="Heteromyidae", offset = 0.1, fontsize = 8, color = "blue", barsize = 1.5 ) +
+  geom_cladelabel(node=MRCA_hystricognathi, label="Hystricognathi", offset = 0.1, fontsize = 8, color = "blue", barsize = 1.5) + 
+  geom_cladelabel(node=MRCA_sciuridae, label="Sciuridae", offset = 0.1, fontsize = 8, color = "blue", barsize = 1.5) + 
+  geom_cladelabel(node=MRCA_gliridae, label="Gliridae", offset = 0.1, fontsize = 8, color = "blue", barsize = 1.5) + 
+  geom_cladelabel(node=MRCA_castoridae, label="Castoridae", offset = 0.1, fontsize = 8, color = "blue", barsize = 1.5) + 
+  geom_cladelabel(node=MRCA_ctenodactylidae, label="Ctenodactylidae", offset = 0.1, fontsize = 8, color = "blue", barsize = 1.5) + 
+  
+  geom_cladelabel(node=MRCA_acomys, label="Acomys", offset = 0.02, fontsize = 8, color = "red", barsize = 1.5) + 
+  geom_cladelabel(node=MRCA_mus, label="Mus", offset = 0.02, fontsize = 8, color = "red", barsize = 1.5) + 
+  geom_cladelabel(node=MRCA_rattus, label="Rattus", offset = 0.02, fontsize = 8, color = "red", barsize = 1.5) 
 
 globaltree
 
+```
+
+Ancestral Recon with pic
+
+```{r,  fig.height = 250, fig.width = 50, echo = FALSE}
 ##### The following are for pic method, not sure to include or not 
 
-# litter_ancestral_pic = 
-#   ace(
-#   charstate$Average, 
-#   tree_global,
-#   type = "continuous",
-#   method = "pic",
-#   model = "BM"
-# )
+litter_ancestral_pic =
+  ace(
+  charstate$Average,
+  tree_global,
+  type = "continuous",
+  method = "pic",
+  model = "BM"
+)
 
-# node_values_pic = c(charstate$Average, round(litter_ancestral_pic$ace, digits= 2))
-# 
-# globaltree_pic = ggtree(tree_global ) + 
-#   geom_tiplab( fontface = "italic", size= 10, offset = label_offset) + 
-#   xlim(0, 1.2) + 
-#   geom_text2(aes(label = node_values_pic), nudge_x = 0.02, size = 8) +
-#   geom_tippoint(aes(color=node_values_pic), size= 8, alpha=1 ) + 
-#   scale_color_gradient(low = "red", high = "green") +
-#   theme(legend.text=element_text(size= 40),
-#         legend.title=element_text(size=60),
-#         legend.key.size= unit(3,"cm"), 
-#         legend.position= "top")
-# 
-# globaltree_pic
+node_values_pic = c(charstate$Average, round(litter_ancestral_pic$ace, digits= 2))
+
+globaltree_pic = ggtree(tree_global, layout = 'circular' ) + 
+  geom_tiplab( fontface = "italic", size= 1.5, offset = 0.01) + 
+  xlim(0, 1.2) + 
+  geom_text2(aes(label = node_values_pic), nudge_x = 0.01, size = 1.5) +
+  geom_tippoint(aes(color=node_values_pic), size= 1.5, alpha= 0.8 ) + 
+  geom_nodepoint( aes(color=node_values_pic), size= 1.5, alpha= 0.8 ) + 
+  scale_color_gradientn(colours = rainbow(3)) +
+  theme(legend.text=element_text(size= 40),
+        legend.title=element_text(size=60),
+        legend.key.size= unit(3,"cm"), 
+        legend.position= "top") + 
+  geom_cladelabel(node=MRCA_muridae, label="Muridae", offset = 0.05, fontsize = 8, color = "blue", barsize = 1.5) + 
+  geom_cladelabel(node=MRCA_dipodidae, label="Dipodidae", offset = 0.1, fontsize = 8, color = "blue",barsize = 1.5) + 
+  geom_cladelabel(node=MRCA_anomaluridae, label="Anomaluridae", offset = 0.1, fontsize = 8, color = "blue", barsize = 1.5 ) +
+  geom_cladelabel(node=MRCA_pedetidae, label="Pedetidae", offset = 0.12, fontsize = 8, color = "blue", barsize = 1.5 ) +
+  
+  geom_cladelabel(node=MRCA_heteromyidae, label="Heteromyidae", offset = 0.1, fontsize = 8, color = "blue", barsize = 1.5 ) +
+  geom_cladelabel(node=MRCA_hystricognathi, label="Hystricognathi", offset = 0.1, fontsize = 8, color = "blue", barsize = 1.5) + 
+  geom_cladelabel(node=MRCA_sciuridae, label="Sciuridae", offset = 0.1, fontsize = 8, color = "blue", barsize = 1.5) + 
+  geom_cladelabel(node=MRCA_gliridae, label="Gliridae", offset = 0.1, fontsize = 8, color = "blue", barsize = 1.5) + 
+  geom_cladelabel(node=MRCA_castoridae, label="Castoridae", offset = 0.1, fontsize = 8, color = "blue", barsize = 1.5) + 
+  geom_cladelabel(node=MRCA_ctenodactylidae, label="Ctenodactylidae", offset = 0.1, fontsize = 8, color = "blue", barsize = 1.5) + 
+  
+  geom_cladelabel(node=MRCA_acomys, label="Acomys", offset = 0.02, fontsize = 8, color = "red", barsize = 1.5) + 
+  geom_cladelabel(node=MRCA_mus, label="Mus", offset = 0.02, fontsize = 8, color = "red", barsize = 1.5) + 
+  geom_cladelabel(node=MRCA_rattus, label="Rattus", offset = 0.02, fontsize = 8, color = "red", barsize = 1.5) 
+
+
+globaltree_pic
 
 
 ```
