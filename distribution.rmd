@@ -1,0 +1,39 @@
+---
+title: "ancillary file"
+output:
+  pdf_document: default
+  github_document: default
+---
+
+```{r setup, echo = FALSE, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(ape)
+library(ggtree)
+library(knitr)
+library(phytools)
+library(tidyverse)
+library(magrittr)
+```
+
+
+```{r fig.width=15, fig.height = 200, include = FALSE} 
+  tree_global = read.tree('RAxML_bipartitions.result_FIN4_raw_rooted_wBoots_4098mam1out_OK.newick')
+  n_tips = length(tree_global$tip.label)
+  root_node = tree_global$edge[(!tree_global$edge[,1] %in% tree_global$edge[,2]),1] %>% unique()
+  root_age = max( dist.nodes(tree_global)[,root_node] )
+  
+  label_offset = 0.02 * root_age
+  tree_width = 5 * root_age
+```
+
+```{r,  fig.height = 200, fig.width = 50, echo = FALSE}
+globaltree = ggtree(tree_global, layout = 'circular' ) + 
+  geom_tiplab( fontface = "italic", size= 1.5, offset = 0.005) + 
+  xlim(0, 1.2) 
+  
+globaltree
+
+```
+
+
