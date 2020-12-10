@@ -1,11 +1,8 @@
 ---
-title: 'E&EB 354 Final Project -- Possibility of Rodent Litter Size as a Predictor
-  for Menstruation '
+title: "Final Project E&EB 354"
 output:
-  github_document: default
   pdf_document: default
-  html_document:
-    df_print: paged
+  github_document: default
 ---
 
 ```{r setup, echo = FALSE, include=FALSE}
@@ -21,6 +18,7 @@ library(magrittr)
 
 
 ```{r fig.width=15, fig.height = 200, include = FALSE} 
+## read in the tree
   tree_global = read.tree('RAxML_bipartitions.result_FIN4_raw_rooted_wBoots_4098mam1out_OK.newick')
   n_tips = length(tree_global$tip.label)
   root_node = tree_global$edge[(!tree_global$edge[,1] %in% tree_global$edge[,2]),1] %>% unique()
@@ -31,7 +29,7 @@ library(magrittr)
 ```
 
 ```{r, include = FALSE}
-## drop all the non-relevant tips
+## drop all the non-relevant tips, clean up names, match name  with character order
 
 charstate = read.csv('1128_Completedata.csv') 
 charstate
@@ -60,19 +58,19 @@ charstate = charstate[match( tree_global$tip.label, charstate[,1] ), ] #the data
 
 ```
 
-
+## ML 
 ```{r,  fig.height = 200, fig.width = 50, echo = FALSE}
 
-litter_ancestral = 
+litter_ancestral_ML = 
   ace(
   charstate$Average, 
   tree_global,
   type = "continuous",
-  method = "REML",
+  method = "ML",
   model = "BM"
 )
 
-node_values = c(charstate$Average, round(litter_ancestral$ace, digits= 2)) # datastructure for plotting the tips
+node_values_ML = c(charstate$Average, round(litter_ancestral_ML$ace, digits= 2)) # data structure for plotting the tips
 
 #for clade
 
@@ -97,12 +95,12 @@ MRCA_mus = getMRCA(tree_global, c("Mus_pahari", "Mus_tenellus"))
 MRCA_rattus = getMRCA(tree_global, c("Rattus_exulans", "Rattus_praetor"))
 
 
-globaltree = ggtree(tree_global, layout = 'circular' ) + 
+globaltree_ML = ggtree(tree_global, layout = 'circular' ) + 
   geom_tiplab( fontface = "italic", size= 1.5, offset = 0.005) + 
   xlim(0, 1.2) + 
-  geom_text2(aes(label = node_values), nudge_x = 0.005, size = 1.5) +
-  geom_tippoint(aes(color=node_values), size= 1.5, alpha= 0.8 ) + 
-  geom_nodepoint( aes(color=node_values), size= 1.5, alpha= 0.8 ) + 
+  geom_text2(aes(label = node_values_ML), nudge_x = 0.005, size = 1.5) +
+  geom_tippoint(aes(color=node_values_ML), size= 1.5, alpha= 0.8 ) + 
+  geom_nodepoint( aes(color=node_values_ML), size= 1.5, alpha= 0.8 ) + 
   scale_color_gradientn(colours = rainbow(3)) +
   theme(legend.text=element_text(size= 40),
         legend.title=element_text(size=60),
@@ -125,26 +123,100 @@ globaltree = ggtree(tree_global, layout = 'circular' ) +
   geom_cladelabel(node=MRCA_mus, label="Mus", offset = 0.02, fontsize = 8, color = "red", barsize = 1.5) + 
   geom_cladelabel(node=MRCA_rattus, label="Rattus", offset = 0.02, fontsize = 8, color = "red", barsize = 1.5) 
 
-globaltree
+globaltree_ML
 
 ```
 Metadata about REML reconstruction: 
 
-- `$sigma2` is the estimate of the Brownian Motion parameter.
-- `$CI95` are the confidence intervals on the ancestral character state reconstructions.
+Residual log-likelihood: `r litter_ancestral_ML$loglik` 
 
-Residual log-likelihood: `r litter_ancestral$resloglik` 
-
-Sigma2: `r litter_ancestral$sigma2`
-
-CI95:
-```{r, echo = FALSE} 
-kable(litter_ancestral$CI95[1:10, ], col.names = c('lower bound', 'upper bound'), caption = "sample REML confidence interval") 
+CI95 for ML:
+```{r echo = FALSE} 
+kable(litter_ancestral_ML$CI95[1:10, ], col.names = c('lower bound', 'upper bound'), caption = "sample ML confidence interval") 
 ```
 
 
+## REML 
+```{r,  fig.height = 200, fig.width = 50, echo = FALSE}
 
-Ancestral Reconstruction using Phylogenetic Independent Contrast
+litter_ancestral_REML = 
+  ace(
+  charstate$Average, 
+  tree_global,
+  type = "continuous",
+  method = "REML",
+  model = "BM"
+)
+
+node_values_REML = c(charstate$Average, round(litter_ancestral_REML$ace, digits= 2)) # datastructure for plotting the tips
+
+#for clade
+
+MRCA_dipodidae = getMRCA(tree_global, c("Zapus_princeps", "Sicista_tianshanica"))
+MRCA_muridae = getMRCA(tree_global, c("Spalax_microphthalmus","Melanomys_caliginosus"))
+MRCA_anomaluridae = getMRCA(tree_global, c("Anomalurus_beecrofti", "Idiurus_macrotis"))
+MRCA_pedetidae = getMRCA(tree_global, c("Pedetes_capensis", "Pedetes_surdaster"))
+
+MRCA_geomyidae = getMRCA(tree_global, c("Geomys_texensis", "Thomomys_talpoides"))
+MRCA_heteromyidae = getMRCA(tree_global, c("Heteromys_oresterus", "Dipodomys_phillipsii"))
+MRCA_hystricognathi = getMRCA(tree_global, c("Trichys_fasciculata", "Cavia_tschudii"))
+MRCA_castoridae = getMRCA(tree_global, c("Castor_canadensis", "Castor_fiber"))
+
+MRCA_ctenodactylidae = getMRCA(tree_global, c("Ctenodactylus_gundi", "Massoutiera_mzabi"))
+MRCA_sciuridae = getMRCA(tree_global, c("Tamiasciurus_mearnsi", "Ratufa_bicolor"))
+MRCA_aplodontidae = getMRCA(tree_global, c("Aplodontia_rufa", "Aplodontia_rufa"))
+MRCA_gliridae = getMRCA(tree_global, c("Glirulus_japonicus", "Dryomys_nitedula"))
+
+#for highlight
+MRCA_acomys = getMRCA(tree_global, c("Acomys_cahirinus", "Acomys_spinosissimus"))
+MRCA_mus = getMRCA(tree_global, c("Mus_pahari", "Mus_tenellus"))
+MRCA_rattus = getMRCA(tree_global, c("Rattus_exulans", "Rattus_praetor"))
+
+
+globaltree_REML = ggtree(tree_global, layout = 'circular' ) + 
+  geom_tiplab( fontface = "italic", size= 1.5, offset = 0.005) + 
+  xlim(0, 1.2) + 
+  geom_text2(aes(label = node_values_REML), nudge_x = 0.005, size = 1.5) +
+  geom_tippoint(aes(color=node_values_REML), size= 1.5, alpha= 0.8 ) + 
+  geom_nodepoint( aes(color=node_values_REML), size= 1.5, alpha= 0.8 ) + 
+  scale_color_gradientn(colours = rainbow(3)) +
+  theme(legend.text=element_text(size= 40),
+        legend.title=element_text(size=60),
+        legend.key.size= unit(3,"cm"), 
+        legend.position= "top") + 
+  geom_cladelabel(node=MRCA_muridae, label="Muridae", offset = 0.05, fontsize = 8, color = "blue", barsize = 1.5) + 
+  geom_cladelabel(node=MRCA_dipodidae, label="Dipodidae", offset = 0.1, fontsize = 8, color = "blue",barsize = 1.5) + 
+  geom_cladelabel(node=MRCA_anomaluridae, label="Anomaluridae", offset = 0.1, fontsize = 8, color = "blue", barsize = 1.5 ) +
+  geom_cladelabel(node=MRCA_pedetidae, label="Pedetidae", offset = 0.12, fontsize = 8, color = "blue", barsize = 1.5 ) +
+  
+  geom_cladelabel(node=MRCA_heteromyidae, label="Heteromyidae", offset = 0.1, fontsize = 8, color = "blue", barsize = 1.5 ) +
+  geom_cladelabel(node=MRCA_geomyidae, label="Geomyidae", offset = 0.05, fontsize = 8, color = "blue", barsize = 1.5 ) +
+  geom_cladelabel(node=MRCA_hystricognathi, label="Hystricognathi", offset = 0.1, fontsize = 8, color = "blue", barsize = 1.5) + 
+  geom_cladelabel(node=MRCA_sciuridae, label="Sciuridae", offset = 0.1, fontsize = 8, color = "blue", barsize = 1.5) + 
+  geom_cladelabel(node=MRCA_gliridae, label="Gliridae", offset = 0.1, fontsize = 8, color = "blue", barsize = 1.5) + 
+  geom_cladelabel(node=MRCA_castoridae, label="Castoridae", offset = 0.1, fontsize = 8, color = "blue", barsize = 1.5) + 
+  geom_cladelabel(node=MRCA_ctenodactylidae, label="Ctenodactylidae", offset = 0.1, fontsize = 8, color = "blue", barsize = 1.5) + 
+  
+  geom_cladelabel(node=MRCA_acomys, label="Acomys", offset = 0.02, fontsize = 8, color = "red", barsize = 1.5) + 
+  geom_cladelabel(node=MRCA_mus, label="Mus", offset = 0.02, fontsize = 8, color = "red", barsize = 1.5) + 
+  geom_cladelabel(node=MRCA_rattus, label="Rattus", offset = 0.02, fontsize = 8, color = "red", barsize = 1.5) 
+
+globaltree_REML
+
+```
+Metadata about REML reconstruction: 
+
+Residual log-likelihood: `r litter_ancestral_REML$resloglik` 
+
+Sigma2: `r litter_ancestral_REML$sigma2`
+
+CI95 for REML:
+```{r echo = FALSE} 
+kable(litter_ancestral_REML$CI95[1:10, ], col.names = c('lower bound', 'upper bound'), caption = "sample REML confidence interval") 
+```
+
+
+## PIC
 
 ```{r,  fig.height = 200, fig.width = 50, echo = FALSE}
 ##### The following are for pic method, not sure to include or not
@@ -191,56 +263,73 @@ globaltree_pic = ggtree(tree_global, layout = 'circular' ) +
 globaltree_pic
 
 ```
+
 ```{r echo = FALSE } 
 kable(litter_ancestral_pic$CI95[1:10, ], col.names = c('lower bound', 'upper bound'), caption = "sample PIC confidence interval") 
 ```
 
-Plotting the values of PIC over REML -- RMEL definitelys gives a narrower range of ancestral litter size.
+## Compare the values by plotting ML and PIC over REML
 ```{r echo = FALSE} 
-# Compare PIC with REML
 
-D_methods = data.frame(
-  reml = litter_ancestral$ace,
-  pic = litter_ancestral_pic$ace
+A_methods = data.frame(
+  pic = litter_ancestral_pic$ace, 
+  reml = litter_ancestral_REML$ace
 )
 
-# Add node numbers to the data frame
-D_methods$node = seq(1:nrow(D_methods)) + n_tips
-D_methods %>%
+A_methods$node = seq(1:nrow(A_methods)) + n_tips
+A_methods %>%
   ggplot(aes(x = reml,y = pic)) +
   geom_point() +
-  geom_abline(slope = 1, intercept = 0, color = "blue")
- #geom_text(aes(label = node), color = "red", vjust = 0, nudge_y = 0.005) +
+  geom_abline(slope = 1, intercept = 0, color = "blue") + coord_equal(ratio = 1)
 
+B_methods = data.frame(
+  ml = litter_ancestral_ML$ace, 
+  reml = litter_ancestral_REML$ace
+)
+
+B_methods$node = seq(1:nrow(A_methods)) + n_tips
+B_methods %>%
+  ggplot(aes(x = reml,y = ml)) +
+  geom_point() +
+  geom_abline(slope = 1, intercept = 0, color = "blue") + coord_equal(ratio = 1) 
 
 ```
 
 
-\newpage
-Plotting the confidence interval on the tree -- the further back in time, the larger the CI.
-REML
-
+## confidence interval ML
 ```{r echo = FALSE}
 
-interval_width = litter_ancestral$CI95[,2] - litter_ancestral$CI95[,1]
+interval_width_ML = litter_ancestral_ML$CI95[,2] - litter_ancestral_ML$CI95[,1]
 
-node_values_2 = c( rep(NA, nrow(charstate)), interval_width )
+node_values_ML = c( rep(NA, nrow(charstate)), interval_width_ML)
 
-intervaltree = ggtree(tree_global, layout = 'circular') + 
-  geom_nodepoint(  aes(color=node_values_2), size=3, alpha=1 )
+intervaltree_ML = ggtree(tree_global, layout = 'circular') + 
+  geom_nodepoint(  aes(color=node_values_ML), size=3, alpha=1 )
 
-intervaltree
+intervaltree_ML
 ```
 
-PIC
+## confidence interval REML
+```{r echo = FALSE}
 
+interval_width_REML = litter_ancestral_REML$CI95[,2] - litter_ancestral_REML$CI95[,1]
+
+node_values_REML = c( rep(NA, nrow(charstate)), interval_width_REML)
+
+intervaltree_REML = ggtree(tree_global, layout = 'circular') + 
+  geom_nodepoint(  aes(color=node_values_REML), size=3, alpha=1 )
+
+intervaltree_REML
+```
+
+## confidence interval PIC
 ```{r echo = FALSE}
 interval_width_pic = litter_ancestral_pic$CI95[,2] - litter_ancestral_pic$CI95[,1]
 
-node_values_3 = c( rep(NA, nrow(charstate)), interval_width_pic )
+node_values_pic = c( rep(NA, nrow(charstate)), interval_width_pic )
 
 intervaltree_pic = ggtree(tree_global, layout = 'circular') + 
-  geom_nodepoint(  aes(color=node_values_3), size=3, alpha=1 )
+  geom_nodepoint(  aes(color=node_values_pic), size=3, alpha=1 )
 
 intervaltree_pic
 ```
