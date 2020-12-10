@@ -1,8 +1,8 @@
 ---
 title: "Final Project E&EB 354"
 output:
-  pdf_document: default
   github_document: default
+  pdf_document: default
 ---
 
 ```{r setup, echo = FALSE, include=FALSE}
@@ -17,7 +17,7 @@ library(magrittr)
 ```
 
 
-```{r fig.width=15, fig.height = 200, include = FALSE} 
+```{r, include = FALSE} 
 ## read in the tree
   tree_global = read.tree('RAxML_bipartitions.result_FIN4_raw_rooted_wBoots_4098mam1out_OK.newick')
   n_tips = length(tree_global$tip.label)
@@ -59,7 +59,7 @@ charstate = charstate[match( tree_global$tip.label, charstate[,1] ), ] #the data
 ```
 
 ## ML 
-```{r,  fig.height = 200, fig.width = 50, echo = FALSE}
+```{r, fig.height = 120, fig.width = 50, echo = FALSE}
 
 litter_ancestral_ML = 
   ace(
@@ -137,7 +137,7 @@ kable(litter_ancestral_ML$CI95[1:10, ], col.names = c('lower bound', 'upper boun
 
 
 ## REML 
-```{r,  fig.height = 200, fig.width = 50, echo = FALSE}
+```{r, fig.height = 120, fig.width = 50, echo = FALSE}
 
 litter_ancestral_REML = 
   ace(
@@ -218,7 +218,7 @@ kable(litter_ancestral_REML$CI95[1:10, ], col.names = c('lower bound', 'upper bo
 
 ## PIC
 
-```{r,  fig.height = 200, fig.width = 50, echo = FALSE}
+```{r,  fig.height = 120, fig.width = 50, echo = FALSE}
 ##### The following are for pic method, not sure to include or not
 
 litter_ancestral_pic =
@@ -269,7 +269,7 @@ kable(litter_ancestral_pic$CI95[1:10, ], col.names = c('lower bound', 'upper bou
 ```
 
 ## Compare the values by plotting ML and PIC over REML
-```{r echo = FALSE} 
+```{r,fig.height = 3, fig.width = 3 ,echo = FALSE} 
 
 A_methods = data.frame(
   pic = litter_ancestral_pic$ace, 
@@ -278,7 +278,7 @@ A_methods = data.frame(
 
 A_methods$node = seq(1:nrow(A_methods)) + n_tips
 A_methods %>%
-  ggplot(aes(x = reml,y = pic)) +
+  ggplot(aes(x = reml ,y = pic)) +
   geom_point() +
   geom_abline(slope = 1, intercept = 0, color = "blue") + coord_equal(ratio = 1)
 

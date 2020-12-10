@@ -102,8 +102,10 @@ A_methods$node = seq(1:nrow(A_methods)) + n_tips
 A_methods %>%
   ggplot(aes(x = reml,y = pic)) +
   geom_point() +
-  geom_abline(slope = 1, intercept = 0, color = "blue") + coord_equal(ratio = 1)
+  geom_abline(slope = 1, intercept = 0, color = "blue") + coord_fixed()
+```
 
+``` {r, echo = FALSE}
 # Plot ML over REML
 B_methods = data.frame(
   ml = litter_ancestral_ML$ace, 
@@ -115,5 +117,6 @@ B_methods$node = seq(1:nrow(A_methods)) + n_tips
 B_methods %>%
   ggplot(aes(x = reml,y = ml)) +
   geom_point() +
-  geom_abline(slope = 1, intercept = 0, color = "blue") + coord_equal(ratio = 1)
+  geom_abline(slope = 1, intercept = 0, color = "blue") + 
+  coord_fixed()
 ```
