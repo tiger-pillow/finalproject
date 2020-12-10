@@ -1,6 +1,6 @@
 ---
 title: "ML_only"
-output: pdf_document
+output: github_document
 ---
 
 ```{r setup, echo = FALSE, include=FALSE}
@@ -58,6 +58,7 @@ charstate = charstate[match( tree_global$tip.label, charstate[,1] ), ] #the data
 
 
 ```{r, echo = FALSE}
+options(warn=-1)
 
 litter_ancestral_ML = 
   ace(
